@@ -1,3 +1,13 @@
+-- =====================================================
+-- Analytics Layer
+-- Transform raw tables into analysis-ready dimensions
+-- and fact tables using views.
+-- =====================================================
+
+
+-- -----------------------------------------------------
+-- Country dimension
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_country AS
 SELECT
     country_id,
@@ -5,6 +15,10 @@ SELECT
     country_code
 FROM raw.countries;
 
+
+-- -----------------------------------------------------
+-- City dimension (includes country information)
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_city AS
 SELECT
     ci.city_id,
@@ -17,6 +31,11 @@ FROM raw.cities ci
 LEFT JOIN raw.countries co
     ON ci.country_id = co.country_id;
 
+
+-- -----------------------------------------------------
+-- Customer dimension
+-- Adds full name and geographic information
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_customer AS
 SELECT
     cu.customer_id,
@@ -33,6 +52,10 @@ FROM raw.customers cu
 LEFT JOIN analytics.dim_city ci
     ON cu.city_id = ci.city_id;
 
+
+-- -----------------------------------------------------
+-- Employee / salesperson dimension
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_employee AS
 SELECT
     e.employee_id,
@@ -51,12 +74,21 @@ FROM raw.employees e
 LEFT JOIN analytics.dim_city ci
     ON e.city_id = ci.city_id;
 
+
+-- -----------------------------------------------------
+-- Category dimension
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_category AS
 SELECT
     category_id,
     category_name
 FROM raw.categories;
 
+
+-- -----------------------------------------------------
+-- Product dimension
+-- Adds category information
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.dim_product AS
 SELECT
     p.product_id,
@@ -73,12 +105,11 @@ FROM raw.products p
 LEFT JOIN raw.categories c
     ON p.category_id = c.category_id;
 
-SELECT
-    s.sales_id,
-    s.product_id,
-    s.quantity
-FROM raw.sales s
 
+-- -----------------------------------------------------
+-- Sales fact table
+-- Recalculates revenue because total_price is unreliable
+-- -----------------------------------------------------
 CREATE OR REPLACE VIEW analytics.fact_sales AS
 SELECT
     s.sales_id,
@@ -107,6 +138,7 @@ SELECT
     s.discount,
     s.total_price,
     p.price AS unit_price,
+    -- recalculated revenue
     (s.quantity * p.price) AS gross_amount,
     (s.quantity * p.price) * (1 - s.discount) AS net_amount_estimated
 FROM raw.sales s
@@ -116,4 +148,3 @@ LEFT JOIN analytics.dim_customer cu
     ON s.customer_id = cu.customer_id
 LEFT JOIN analytics.dim_product p
     ON s.product_id = p.product_id;
-

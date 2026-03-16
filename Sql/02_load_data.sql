@@ -1,3 +1,14 @@
+-- =====================================================
+-- Data Ingestion: public → raw
+-- Transfer imported source tables into the raw schema.
+-- Some fields require type conversion and basic cleaning.
+-- =====================================================
+
+
+-- -----------------------------------------------------
+-- Direct table transfers (structure already compatible)
+-- -----------------------------------------------------
+
 INSERT INTO raw.countries
 SELECT * FROM public.countries;
 
@@ -10,11 +21,22 @@ SELECT * FROM public.categories;
 INSERT INTO raw.customers
 SELECT * FROM public.customers;
 
+
+-- -----------------------------------------------------
+-- Inspect column structure of the products table
+-- (used to verify original column naming)
+-- -----------------------------------------------------
+
 SELECT column_name
 FROM information_schema.columns
 WHERE table_schema = 'public'
 AND table_name = 'products';
 
+
+-- -----------------------------------------------------
+-- Employees data transfer
+-- Convert text-based date fields to TIMESTAMP
+-- -----------------------------------------------------
 
 INSERT INTO raw.employees (
     employee_id,
@@ -36,6 +58,13 @@ SELECT
     "CityID",
     "HireDate"::timestamp
 FROM public.employees;
+
+
+-- -----------------------------------------------------
+-- Products data transfer
+-- Clean numeric and timestamp fields using NULLIF
+-- to handle empty strings
+-- -----------------------------------------------------
 
 INSERT INTO raw.products (
     product_id,
@@ -59,6 +88,12 @@ SELECT
     "IsAllergic",
     NULLIF(TRIM("VitalityDays"::text), '')::numeric
 FROM public.products;
+
+
+-- -----------------------------------------------------
+-- Sales data transfer
+-- Handle empty values and convert types
+-- -----------------------------------------------------
 
 INSERT INTO raw.sales (
     sales_id,

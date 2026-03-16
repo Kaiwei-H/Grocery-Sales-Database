@@ -1,12 +1,26 @@
+-- =====================================================
+-- Schema initialization
+-- raw:     stores original imported data
+-- analytics: used for transformed analytical views
+-- =====================================================
+
 CREATE SCHEMA IF NOT EXISTS raw;
 CREATE SCHEMA IF NOT EXISTS analytics;
 
+
+-- =====================================================
+-- RAW TABLES
+-- These tables store the original data imported from CSV
+-- =====================================================
+
+-- Countries dimension
 CREATE TABLE IF NOT EXISTS raw.countries (
     country_id   INT PRIMARY KEY,
     country_name VARCHAR(100),
     country_code VARCHAR(10)
 );
 
+-- Cities dimension (linked to countries)
 CREATE TABLE IF NOT EXISTS raw.cities (
     city_id      INT PRIMARY KEY,
     city_name    VARCHAR(100),
@@ -14,6 +28,7 @@ CREATE TABLE IF NOT EXISTS raw.cities (
     country_id   INT
 );
 
+-- Customers dimension (linked to cities)
 CREATE TABLE IF NOT EXISTS raw.customers (
     customer_id     INT PRIMARY KEY,
     first_name      VARCHAR(100),
@@ -23,6 +38,7 @@ CREATE TABLE IF NOT EXISTS raw.customers (
     address         VARCHAR(255)
 );
 
+-- Employees / salespersons
 CREATE TABLE IF NOT EXISTS raw.employees (
     employee_id     INT PRIMARY KEY,
     first_name      VARCHAR(100),
@@ -34,11 +50,13 @@ CREATE TABLE IF NOT EXISTS raw.employees (
     hire_date       TIMESTAMP
 );
 
+-- Product categories
 CREATE TABLE IF NOT EXISTS raw.categories (
     category_id    INT PRIMARY KEY,
     category_name  VARCHAR(100)
 );
 
+-- Products dimension
 CREATE TABLE IF NOT EXISTS raw.products (
     product_id      INT PRIMARY KEY,
     product_name    VARCHAR(255),
@@ -51,6 +69,7 @@ CREATE TABLE IF NOT EXISTS raw.products (
     vitality_days   NUMERIC(10,2)
 );
 
+-- Sales fact table (transaction level data)
 CREATE TABLE IF NOT EXISTS raw.sales (
     sales_id             INT PRIMARY KEY,
     salesperson_id       INT,
@@ -62,6 +81,12 @@ CREATE TABLE IF NOT EXISTS raw.sales (
     sales_date           TIMESTAMP,
     transaction_number   VARCHAR(50)
 );
+
+
+-- =====================================================
+-- FOREIGN KEY RELATIONSHIPS
+-- Enforces referential integrity between tables
+-- =====================================================
 
 ALTER TABLE raw.cities
 ADD CONSTRAINT fk_cities_country
@@ -91,6 +116,12 @@ ALTER TABLE raw.sales
 ADD CONSTRAINT fk_sales_product
 FOREIGN KEY (product_id) REFERENCES raw.products(product_id);
 
+
+-- =====================================================
+-- INDEXES
+-- Improve query performance for joins and filtering
+-- =====================================================
+
 CREATE INDEX IF NOT EXISTS idx_cities_country_id
 ON raw.cities(country_id);
 
@@ -115,6 +146,12 @@ ON raw.sales(product_id);
 CREATE INDEX IF NOT EXISTS idx_sales_sales_date
 ON raw.sales(sales_date);
 
+
+-- =====================================================
+-- Verification query
+-- Lists all tables created in the raw schema
+-- =====================================================
+
 SELECT table_schema, table_name
 FROM information_schema.tables
-WHERE table_schema='raw';
+WHERE table_schema = 'raw';

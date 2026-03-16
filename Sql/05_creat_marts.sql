@@ -1,5 +1,16 @@
+-- =====================================================
+-- MART LAYER
+-- Aggregated tables built from analytics.fact_sales
+-- These tables support business analysis and reporting
+-- =====================================================
+
 CREATE SCHEMA IF NOT EXISTS mart;
 
+
+-- -----------------------------------------------------
+-- Monthly sales overview
+-- Tracks revenue and sales volume over time
+-- -----------------------------------------------------
 CREATE TABLE mart.sales_overview_monthly AS
 SELECT
     sales_month,
@@ -12,6 +23,11 @@ FROM analytics.fact_sales
 GROUP BY sales_month
 ORDER BY sales_month;
 
+
+-- -----------------------------------------------------
+-- Product performance metrics
+-- Evaluates product-level sales and discount behavior
+-- -----------------------------------------------------
 CREATE TABLE mart.product_performance AS
 SELECT
     product_id,
@@ -30,6 +46,11 @@ GROUP BY
     category_name,
     product_class;
 
+
+-- -----------------------------------------------------
+-- Category performance summary
+-- Measures revenue contribution by product category
+-- -----------------------------------------------------
 CREATE TABLE mart.category_performance AS
 SELECT
     category_id,
@@ -44,6 +65,11 @@ GROUP BY
     category_id,
     category_name;
 
+
+-- -----------------------------------------------------
+-- Customer performance analysis
+-- Tracks customer purchasing behavior and lifetime value
+-- -----------------------------------------------------
 CREATE TABLE mart.customer_performance AS
 SELECT
     customer_id,
@@ -62,6 +88,11 @@ GROUP BY
     customer_city,
     customer_country;
 
+
+-- -----------------------------------------------------
+-- Salesperson performance analysis
+-- Evaluates sales contribution by employee
+-- -----------------------------------------------------
 CREATE TABLE mart.salesperson_performance AS
 SELECT
     salesperson_id,
@@ -79,4 +110,3 @@ GROUP BY
     salesperson_name,
     salesperson_city,
     salesperson_country;
-
