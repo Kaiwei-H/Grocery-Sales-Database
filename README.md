@@ -1,4 +1,4 @@
-DATA FROM https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset
+Dataset: [Grocery Sales Dataset on Kaggle](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset)
 
 # Sales Data Analysis with SQL
 
@@ -15,13 +15,13 @@ The goal of this project is to:
 - Generate business insights using SQL queries
 
 The project follows a **data warehouse style architecture**:
+
 ```mermaid
 flowchart TD
     A[CSV / Source Tables] --> B[RAW Layer]
     B --> C[Analytics Views]
     C --> D[Mart Tables]
     D --> E[Business Analysis]
----
 
 # Dataset Description
 
