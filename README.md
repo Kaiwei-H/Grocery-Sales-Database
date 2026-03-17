@@ -22,7 +22,7 @@ flowchart TD
     B --> C[Analytics Views]
     C --> D[Mart Tables]
     D --> E[Business Analysis]
-
+```
 # Dataset Description
 
 The dataset includes the following core entities:
