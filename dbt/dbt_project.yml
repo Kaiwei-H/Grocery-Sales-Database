@@ -1,0 +1,19 @@
+name: 'grocery_sales'
+version: '1.0.0'
+config-version: 2
+
+profile: 'grocery_sales'
+
+model-paths: ["models"]
+
+models:
+  grocery_sales:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: analytics
+      +materialized: view
+    marts:
+      +schema: mart
+      +materialized: table

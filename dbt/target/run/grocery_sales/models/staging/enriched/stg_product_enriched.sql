@@ -1,0 +1,20 @@
+
+  create view "grocery_sale"."public_staging"."stg_product_enriched__dbt_tmp"
+    
+    
+  as (
+    select
+    p.product_id,
+    p.product_name,
+    p.price,
+    p.category_id,
+    c.category_name,
+    p.class,
+    p.modify_date,
+    p.resistant,
+    p.is_allergic,
+    p.vitality_days
+from "grocery_sale"."public_staging"."stg_products" p
+left join "grocery_sale"."public_staging"."stg_categories" c
+    on p.category_id = c.category_id
+  );
